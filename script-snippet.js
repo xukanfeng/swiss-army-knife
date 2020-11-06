@@ -151,3 +151,98 @@ this.log = (func, params) => {
     const boo = myNew(Boo, 'alice')
     console.log(boo)
 }
+
+{
+    Promise.myAll = function(promiseArr) {
+        return new Promise((resolve, reject) => {
+            let result = []
+            let count = 0
+            promiseArr.forEach((promise, index) => {
+                promise.then(res => {
+                    result[index] = res
+                    count++
+                    if (count === promiseArr.length) {
+                        resolve(result)
+                    }
+                }).catch(e => {
+                    reject(e)
+                })
+            })
+        })
+    }
+    Promise.myAll([
+        new Promise(resolve => setTimeout(() => resolve(1), 1000)),
+        new Promise(resolve => setTimeout(() => resolve(2), 2000)),
+        new Promise(resolve => setTimeout(() => resolve(3), 3000)),
+    ]).then(res => console.log('myAll', res))
+
+    Promise.myRace = function(promiseArr) {
+        return new Promise((resolve, reject) => {
+            promiseArr.forEach(promise => {
+                // 如果不是Promise实例需要转化为Promise实例
+                Promise.resolve(promise)
+                .then(res => resolve(res))
+                .catch(e => reject(e))
+            })
+        })
+    }
+    Promise.myRace([
+        new Promise(resolve => setTimeout(() => resolve(1), 1000)),
+        new Promise(resolve => setTimeout(() => resolve(2), 2000)),
+        new Promise(resolve => setTimeout(() => resolve(3), 3000)),
+    ]).then(res => console.log('myRace', res))
+}
+
+{
+    async function asyncPool(tasks, poolLimit) {
+        const result = [];
+        const executing = [];
+        for (let task of tasks) {
+            const promise = Promise.resolve(task())
+            // promise resolve 后，结果保存在 result中
+            result.push(promise)
+            // 保存正在执行的 promise
+            executing.push(promise)
+            promise.then(() => executing.splice(executing.indexOf(promise), 1))
+            if (executing.length >= poolLimit) {
+                await Promise.race(executing)
+            }
+        }
+        return Promise.all(result);
+    }
+
+    const timeout = i => new Promise(resolve => setTimeout(() => { console.log(i); resolve(i) }, i));
+    (async () => {
+        const results = await asyncPool([
+            () => timeout(100),
+            () => timeout(500),
+            () => timeout(300),
+            () => timeout(200)], 2);
+        console.log('asyncPool', results)
+    })();
+}
+
+{
+    const vnode = {
+        tag: '',
+        attr: '',
+        children: []
+    }
+
+    function render(vnode, container) {
+        container.appendChild(createNode(vnode))
+    }
+    function createNode(vnode) {
+        if (typeof vnode === 'string') {
+            return document.createTextNode(vnode)
+        }
+        const dom = document.createElement(vnode.tag)
+        if(vnode.attr) {
+            Object.entries(vnode.attr).forEach(entry => {
+                dom.setAttribute(entry[0], entry[1])
+            })
+        }
+        vnode.children.forEach(child => render(child, dom))
+        return dom
+    }
+}
