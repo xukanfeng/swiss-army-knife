@@ -3,6 +3,7 @@ this.log = (func, params) => {
     console.log("result of [", func.name, "] is: ", func(params))
 }
 
+// 基础语法
 {
     const arr = [1, [2, [3, [4, 5]]], 6]
 
@@ -44,6 +45,26 @@ this.log = (func, params) => {
     // ...
 }
 
+// 柯里化
+{
+    function add() {
+        const _args = [...arguments]
+
+        function fn() {
+            _args.push(...arguments)
+            return fn
+        }
+
+        fn.toString = function() {
+            return _args.reduce((acc, cur) => acc + cur)
+        }
+
+        return fn
+    }
+    console.log(add(1)(2)(3, 4, 5)(6, 7))
+}
+
+// Object
 {
     const person = {
         name: 'alice'
@@ -96,6 +117,104 @@ this.log = (func, params) => {
 }
 
 {
+    /*
+           obj      Foo
+            |       /
+            v      v
+      Foo.prototype
+            |
+            v
+    */
+    function myNew(Foo, ...args) {
+        const obj = Object.create(Foo.prototype)
+        const res = Foo.apply(obj, args)
+        return Object.prototype.toString.call(res) === '[object Object]' ?
+                res : obj
+    }
+    function Boo(name) {
+        this.name = name
+        return {
+            age: 18
+        }
+    }
+    const boo = myNew(Boo, 'alice')
+    console.log(boo)
+}
+
+{
+    function myInstanceof(instance, obj) {
+        // 基本数据类型返回 false
+        if (typeof instance !== 'object' || instance === null) return false
+
+        let proto = Object.getPrototypeOf(instance)
+        while(true) {
+            if (proto === null) return false
+            if (proto === obj.prototype) return true
+            proto = Object.getPrototypeOf(proto)
+        }
+    }
+    console.log('myInstanceof test:', myInstanceof(10, Object), myInstanceof({a: 1}, Object))
+}
+
+
+// Promise
+{
+    async function asyncPool(tasks, poolLimit) {
+        const result = [];
+        const executing = [];
+        for (let task of tasks) {
+            const promise = Promise.resolve(task())
+            // promise resolve 后，结果保存在 result中
+            result.push(promise)
+            // 保存正在执行的 promise
+            executing.push(promise)
+            promise.then(() => executing.splice(executing.indexOf(promise), 1))
+            if (executing.length >= poolLimit) {
+                await Promise.race(executing)
+            }
+        }
+        return Promise.all(result);
+    }
+
+    const timeout = i => new Promise(resolve => setTimeout(() => { /*console.log(i);*/ resolve(i) }, i));
+    (async () => {
+        const results = await asyncPool([
+            () => timeout(10),
+            () => timeout(50),
+            () => timeout(30),
+            () => timeout(20)], 2);
+        console.log('asyncPool', results)
+    })();
+}
+
+// 框架
+{
+    const vnode = {
+        tag: '',
+        attr: '',
+        children: []
+    }
+
+    function render(vnode, container) {
+        container.appendChild(createNode(vnode))
+    }
+    function createNode(vnode) {
+        if (typeof vnode === 'string') {
+            return document.createTextNode(vnode)
+        }
+        const dom = document.createElement(vnode.tag)
+        if(vnode.attr) {
+            Object.entries(vnode.attr).forEach(entry => {
+                dom.setAttribute(entry[0], entry[1])
+            })
+        }
+        vnode.children.forEach(child => render(child, dom))
+        return dom
+    }
+}
+
+// 其他
+{
     function debounce(fn, interval) {
         let timer = null
         return function() {
@@ -127,122 +246,3 @@ this.log = (func, params) => {
     }
 }
 
-{
-    /*
-           obj      Foo
-            |       /
-            v      v
-      Foo.prototype
-            |
-            v
-    */
-    function myNew(Foo, ...args) {
-        const obj = Object.create(Foo.prototype)
-        const res = Foo.apply(obj, args)
-        return Object.prototype.toString.call(res) === '[object Object]' ?
-                res : obj
-    }
-    function Boo(name) {
-        this.name = name
-        return {
-            age: 18
-        }
-    }
-    const boo = myNew(Boo, 'alice')
-    console.log(boo)
-}
-
-{
-    Promise.myAll = function(promiseArr) {
-        return new Promise((resolve, reject) => {
-            let result = []
-            let count = 0
-            promiseArr.forEach((promise, index) => {
-                promise.then(res => {
-                    result[index] = res
-                    count++
-                    if (count === promiseArr.length) {
-                        resolve(result)
-                    }
-                }).catch(e => {
-                    reject(e)
-                })
-            })
-        })
-    }
-    Promise.myAll([
-        new Promise(resolve => setTimeout(() => resolve(1), 1000)),
-        new Promise(resolve => setTimeout(() => resolve(2), 2000)),
-        new Promise(resolve => setTimeout(() => resolve(3), 3000)),
-    ]).then(res => console.log('myAll', res))
-
-    Promise.myRace = function(promiseArr) {
-        return new Promise((resolve, reject) => {
-            promiseArr.forEach(promise => {
-                // 如果不是Promise实例需要转化为Promise实例
-                Promise.resolve(promise)
-                .then(res => resolve(res))
-                .catch(e => reject(e))
-            })
-        })
-    }
-    Promise.myRace([
-        new Promise(resolve => setTimeout(() => resolve(1), 1000)),
-        new Promise(resolve => setTimeout(() => resolve(2), 2000)),
-        new Promise(resolve => setTimeout(() => resolve(3), 3000)),
-    ]).then(res => console.log('myRace', res))
-}
-
-{
-    async function asyncPool(tasks, poolLimit) {
-        const result = [];
-        const executing = [];
-        for (let task of tasks) {
-            const promise = Promise.resolve(task())
-            // promise resolve 后，结果保存在 result中
-            result.push(promise)
-            // 保存正在执行的 promise
-            executing.push(promise)
-            promise.then(() => executing.splice(executing.indexOf(promise), 1))
-            if (executing.length >= poolLimit) {
-                await Promise.race(executing)
-            }
-        }
-        return Promise.all(result);
-    }
-
-    const timeout = i => new Promise(resolve => setTimeout(() => { console.log(i); resolve(i) }, i));
-    (async () => {
-        const results = await asyncPool([
-            () => timeout(100),
-            () => timeout(500),
-            () => timeout(300),
-            () => timeout(200)], 2);
-        console.log('asyncPool', results)
-    })();
-}
-
-{
-    const vnode = {
-        tag: '',
-        attr: '',
-        children: []
-    }
-
-    function render(vnode, container) {
-        container.appendChild(createNode(vnode))
-    }
-    function createNode(vnode) {
-        if (typeof vnode === 'string') {
-            return document.createTextNode(vnode)
-        }
-        const dom = document.createElement(vnode.tag)
-        if(vnode.attr) {
-            Object.entries(vnode.attr).forEach(entry => {
-                dom.setAttribute(entry[0], entry[1])
-            })
-        }
-        vnode.children.forEach(child => render(child, dom))
-        return dom
-    }
-}
