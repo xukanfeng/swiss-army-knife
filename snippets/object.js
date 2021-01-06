@@ -171,3 +171,36 @@
   sub.sayAge()
   console.log(new SuperType("bob"))
 }
+
+{
+  console.log("js object 遍历测试")
+
+  const obj = {
+    "a": 1,
+    [Symbol("b")]: 2
+  }
+  Object.defineProperty(obj, "c", {
+    value: 3,
+    numberable: "false"
+  })
+  obj.__proto__.d = 4
+  obj.__proto__ = Object.create({})
+  obj.__proto__.__proto__.e = 5
+
+  console.log("### Object.keys ###")
+  Object.keys(obj).forEach(key => console.log("key:", key, "value:", obj[key]))
+
+  console.log("### for in ###")
+  for (let key in obj) console.log("key:", key, "value:", obj[key])
+  console.log("### for in with Object.hasOwnProperty === Object.keys ###")
+  for (let key in obj) obj.hasOwnProperty(key) && console.log("key:", key, "value:", obj[key])
+
+  console.log("### Object.getOwnPropertyNames ###")
+  Object.getOwnPropertyNames(obj).forEach(key => console.log("key:", key, "value:", obj[key]))
+
+  console.log("### Object.getOwnPropertyNames ###")
+  Object.getOwnPropertySymbols(obj).forEach(key => console.log("key:", key, "value:", obj[key]))
+
+  console.log("### Reflect.ownKeys ###")
+  Reflect.ownKeys(obj).forEach(key => console.log("key:", key, "value:", obj[key]))
+}

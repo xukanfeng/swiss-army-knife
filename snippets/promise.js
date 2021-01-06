@@ -315,3 +315,43 @@
 
   Promise.myAllSettled(promises)
 }
+
+{
+  class Scheduler {
+    limit = 2
+    excuting = []
+    waiting = []
+
+    add(promiseCreator) {
+      return this.run(promiseCreator)
+    }
+
+    async run(promiseCreator) {
+      this.waiting.push(promiseCreator)
+
+      while (this.excuting.length >= this.limit) {
+        await Promise.race(this.excuting)
+      }
+      const p = this.waiting.shift()()
+      p.then(() => this.excuting.splice(this.excuting.indexOf(p), 1))
+      this.excuting.push(p)
+      return p
+    }
+  }
+
+  const timeout = (time) => new Promise(resolve => {
+    setTimeout(resolve, time)
+  })
+
+  const scheduler = new Scheduler()
+  const addTask = (time, order) => {
+    scheduler.add(() => timeout(time))
+      .then(() => console.log(order))
+  }
+
+  addTask(1000, '1')
+  addTask(500, '2')
+  addTask(300, '3')
+  addTask(400, '4')
+  // output: 2 3 1 4
+}
