@@ -6,7 +6,7 @@
       const args = arguments
 
       if (timer) clearTimeout(timer)
-      timeout = setTimeout(() => {
+      timer = setTimeout(() => {
         // 原函数作为参数传递时，会作为普通函数处理，不管是否挂载在某个对象上
         fn.apply(context, args)
       }, interval)

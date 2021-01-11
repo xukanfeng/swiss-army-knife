@@ -26,6 +26,10 @@
       }
     }
   }
+  const curryAdd_v1 = curry_v1(function (a, b, c, d, e) {
+    return [...arguments].reduce((a, b) => a + b)
+  })
+  console.log("curry add", curryAdd_v1(1)(2, 3)(4, 5, 6)())
 
   function curry_v2(fn, length) {
     length = length || fn.length // 使用 fn.length 获取函数参数个数
@@ -37,8 +41,8 @@
       }
     }
   }
-  const curryAdd = curry_v2(function (a, b, c, d, e) {
+  const curryAdd_v2 = curry_v2(function (a, b, c, d, e) {
     return [...arguments].reduce((a, b) => a + b)
   })
-  console.log("curry add", curryAdd(1)(2, 3)(4, 5))
+  console.log("curry add", curryAdd_v2(1)(2, 3)(4, 5, 6))
 }

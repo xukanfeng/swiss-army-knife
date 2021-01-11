@@ -45,23 +45,40 @@
 }
 
 {
-  Array.prototype.myReduce = function (callback, prev) {
-    //遍历this 数组
-    for (let i = 0; i < this.length; i++) {
-      //判断有没有设置初始值
-      if (typeof prev === "undefined") {
-        //没有初始值，则调用callback，传入当前值，下一个值，当前 index 为下一个，当前数组
-        prev = callback(this[i], this[i + 1], i + 1, this);
-      } else {
-        //有初始值，则调用callback，传入 prev，当前值，当前 index，当前数组
-        prev = callback(prev, this[i], i, this);
-      }
+  // reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: readonly T[]) => T): T
+  Array.prototype.myReduce = function (fn, initialValue) {
+    let arr = [].slice.call(this);
+    // 通过判断入参长度，可以避免过滤initialValue传入的非法值（0,undifind,...）
+    if (arguments.length === 2) {
+      arr.unshift(initialValue);
     }
-    return prev;
-  };
+    let result = arr[0];
+    for (let i = 1; i < arr.length; i++) {
+      if (!arr.hasOwnProperty(i)) {
+        continue;
+      }
+      // 将第一次的出参作为第二次的入参
+      result = fn.call(null, result, arr[i], i, this);
+    }
+    return result;
+  }
 
-  console.log([1, 2, 3, 4].myReduce((prev, curr, index, thisArg) => {
-    console.log("index", index)
-    return prev + curr
-  }, 10))
+  console.log([1, 2, 3, 4].myReduce((prev, curr, index, thisArg) => prev + curr))
+  console.log([1, 2, 3, 4].myReduce((prev, curr, index, thisArg) => prev + curr, 10))
+}
+
+{
+  // map(callbackfn: (value: number, index: number, array: number[]) => any, thisArg?: any): any[]
+  Array.prototype.myMap = function (fn, thisArg) {
+    const result = []
+    for (let i = 0; i < this.length; i++) {
+      if (!this.hasOwnProperty(i)) {
+        continue;
+      }
+      result.push(fn.call(thisArg, this[i], i, this))
+    }
+    return result
+  }
+
+  console.log([1, 2, 3, 4].myMap(n => n * 2))
 }

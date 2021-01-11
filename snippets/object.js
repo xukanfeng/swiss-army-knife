@@ -198,7 +198,7 @@
   console.log("### Object.getOwnPropertyNames ###")
   Object.getOwnPropertyNames(obj).forEach(key => console.log("key:", key, "value:", obj[key]))
 
-  console.log("### Object.getOwnPropertyNames ###")
+  console.log("### Object.getOwnPropertySymbols ###")
   Object.getOwnPropertySymbols(obj).forEach(key => console.log("key:", key, "value:", obj[key]))
 
   console.log("### Reflect.ownKeys ###")

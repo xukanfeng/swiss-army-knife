@@ -19,8 +19,6 @@
         listener.apply(this, args)
         this.off(event, listener)
       }
-      // 保存原始 listener
-      wrapper.origin = listener
       this.on(event, wrapper)
     }
     emit(event, ...args) {
@@ -40,7 +38,7 @@
         // 如果没有 listener，移除全部 listener
         this.map[event].length = 0
       } else {
-        this.map[event] = this.map[event].filter(cb => cb === listener || cb === listener.origin)
+        this.map[event] = this.map[event].filter(cb => cb === listener)
       }
     }
   }

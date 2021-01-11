@@ -118,7 +118,9 @@
 
     catch (rejectFn) {
       return this.then(undefined, rejectFn)
-    } finally(callback) {
+    }
+
+    finally(callback) {
       return this.then(
         // MyPromise.resolve执行回调,并在then中return结果传递给后面的Promise
         value => MyPromise.resolve(callback()).then(() => value),
