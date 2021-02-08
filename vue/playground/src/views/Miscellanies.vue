@@ -25,6 +25,7 @@
       </div>
     </div>
     <br />
+    <Uploader></Uploader>
   </div>
 </template>
 
@@ -33,6 +34,7 @@ import Vue from 'vue'
 import { Divider } from 'ant-design-vue'
 import TodoList from '@/components/TodoList.vue'
 import TsNotes from '@/components/TsNotes.vue'
+import Uploader from '@/components/Uploader.vue'
 
 Vue.use(Divider)
 
@@ -53,6 +55,7 @@ export default {
   components: {
     TodoList,
     TsNotes,
+    Uploader,
   },
   data: () => ({
     inputData: '',

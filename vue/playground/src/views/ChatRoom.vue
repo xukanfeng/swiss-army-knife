@@ -5,6 +5,7 @@
         <div class="list-container">
           <div class="list-desc">Room</div>
           <div class="list">
+            <!--
             <RecycleScroller
               style="height: 100%"
               :items="msgList"
@@ -17,6 +18,8 @@
             >
               <div>{{ formateMsg(item) }}</div>
             </RecycleScroller>
+            -->
+            <span v-for="msg in msgList" :key="msg" class="msg">{{ formateMsg(msg) }}</span>
           </div>
         </div>
         <div class="msg-editor">
@@ -118,15 +121,15 @@ export default {
         this.$store.commit(UPDATE_USER_LIST, { user: msg.user, status: 'join' })
         this.$store.commit(UPDATE_MSG_LIST, msg)
         this.$refs.user_scroller.scrollToItem(this.userList.length)
-        this.$refs.msg_scroller.scrollToItem(this.msgList.length)
+        // this.$refs.msg_scroller.scrollToItem(this.msgList.length)
       } else if (msg.type === 'left') {
         this.$store.commit(UPDATE_USER_LIST, { user: msg.user, status: 'left' })
         this.$store.commit(UPDATE_MSG_LIST, msg)
         this.$refs.user_scroller.scrollToItem(this.userList.length)
-        this.$refs.msg_scroller.scrollToItem(this.msgList.length)
+        // this.$refs.msg_scroller.scrollToItem(this.msgList.length)
       } else if (msg.type === 'chat') {
         this.$store.commit(UPDATE_MSG_LIST, msg)
-        this.$refs.msg_scroller.scrollToItem(this.msgList.length)
+        // this.$refs.msg_scroller.scrollToItem(this.msgList.length)
       }
     },
     onSend(message) {
@@ -161,6 +164,7 @@ export default {
 .list{
   height: 50vh;
   padding-left: 10px;
+  overflow: scroll;
 }
 .msg-editor{
   display: flex;
@@ -168,5 +172,8 @@ export default {
 }
 .user-list-container{
   margin-left: 20px;
+}
+.msg{
+  color: black;
 }
 </style>
