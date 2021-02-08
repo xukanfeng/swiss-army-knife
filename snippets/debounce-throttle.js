@@ -28,4 +28,18 @@
       }
     }
   }
+
+  function throttle_v2(fn, interval) {
+    let prev = Date.now()
+    return function () {
+      const context = this
+      const args = arguments
+
+      let now = Date.now()
+      if (now - prev >= interval) {
+        fn.apply(context, args)
+        prev = Date.now()
+      }
+    }
+  }
 }

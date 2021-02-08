@@ -37,47 +37,106 @@
   foo2.h = foo2
 
   function isEqual(target1, target2) {
-    function getType(target) {
-      return Object.prototype.toString.call(target)
-    }
-
     function helper(target1, target2, memo = new WeakSet()) {
-      const keys = Object.keys(target1)
-
-      for (let key of keys) {
-        const value1 = target1[key]
-        const value2 = target2[key]
-
-        if (value1 && !value2) return false
-
-        if (getType(value1) === '[object Number]') {
-          if (isNaN(value1)) {
-            if (!isNaN(value1)) return false
-          } else {
-            if (value1 !== value2) return false
-          }
-        } else if (getType(value1) === '[object Boolean]' ||
-          getType(value1) === '[object String]' ||
-          getType(value1) === '[object Function]' ||
-          value1 === null ||
-          value1 === undefined) {
-          if (value1 !== value2) return false
-        } else if (getType(value1) === '[object Object]') {
-          if (memo.has(value1)) continue
-          else(memo.add(value1))
-
-          let result = helper(value1, value2, memo)
-          if (!result) return false
-        } else if (getType(value1) === '[object Array]') {
-          for (let i = 0; i < value1.length; i++) {
-            let result = helper(value1[i], value2[i], memo)
-            if (!result) return false
-          }
+      // 处理数组和对象
+      if (typeof target1 === 'object' && target1 !== null) {
+        // 处理对象的循环引用
+        if (!Array.isArray(target1)) {
+          if (memo.has(target1)) return true
+          else memo.add(target1)
         }
+        // 长度不一样直接返回 false
+        if (Object.keys(target1).length !== Object.keys(target2).length) return false
+        // 统一处理数组和对象
+        for (let key of Object.keys(target1)) {
+          if (!helper(target1[key], target2[key], memo)) return false
+        }
+        return true
+      } else {
+        return Object.is(target1, target2)
       }
-      return true
     }
     return helper(target1, target2)
   }
-  console.log(isEqual(foo1, foo2));
+
+  // test cases
+  class Boo {
+    boo = 1
+  }
+
+  const obj = {
+    a: 1,
+    b: '1',
+    c: [1, 2, '3'],
+    boo: new Boo()
+  }
+
+  const circularObj = {
+    ...obj,
+    d: {}
+  }
+  circularObj.d.e = circularObj.d
+
+  const target1 = [
+    null,
+    undefined,
+    false,
+    true,
+    Boolean(false),
+    1,
+    +0,
+    -0,
+    Infinity,
+    NaN,
+    Number(1),
+    '1',
+    [1, 2, 3],
+    [1, 2, 3],
+    [1, 2, 3],
+    obj,
+    obj,
+    circularObj,
+    [1, 2, 3, obj, circularObj],
+    Symbol(),
+    () => {},
+    new Date()
+  ]
+
+  const target2 = [
+    undefined,
+    1,
+    true,
+    false,
+    Boolean(true),
+    2,
+    -0,
+    +0,
+    -Infinity,
+    NaN,
+    Number(2),
+    '2',
+    [2, 3],
+    [1, 2, 4],
+    [1, 2, 3, 4],
+    {
+      ...obj,
+      foo: 'foo'
+    },
+    {
+      ...obj,
+      a: 2
+    },
+    circularObj,
+    [1, 2, 3, obj, circularObj],
+    Symbol(),
+    () => {},
+    new Date()
+  ]
+
+  target1.forEach(item => {
+    !isEqual(item, item) && console.log(item, item)
+  })
+  for (let i = 0; i < target1.length; i++) {
+    console.log(isEqual(target1[i], target2[i]), target1[i], target2[i])
+  }
 }

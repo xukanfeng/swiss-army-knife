@@ -8,8 +8,9 @@
   }
   console.log(flatten1(arr))
 
+  // 不能处理 ['[', ']'] !
   const flatten2 = arr => {
-    return JSON.parse(`[${JSON.stringify(arr).replace(/(\[|\])/g, '')}]`)
+    return JSON.parse(`[${JSON.stringify(arr).replace(/\[|\]/g, '')}]`) // /[\[\]]/g
   }
   console.log(flatten2(arr))
 }
@@ -48,23 +49,36 @@
   // reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: readonly T[]) => T): T
   Array.prototype.myReduce = function (fn, initialValue) {
     let arr = [].slice.call(this);
+    let startIndex = 0;
     // 通过判断入参长度，可以避免过滤initialValue传入的非法值（0,undifind,...）
     if (arguments.length === 2) {
       arr.unshift(initialValue);
+      startIndex = -1
     }
     let result = arr[0];
     for (let i = 1; i < arr.length; i++) {
       if (!arr.hasOwnProperty(i)) {
         continue;
       }
-      // 将第一次的出参作为第二次的入参
-      result = fn.call(null, result, arr[i], i, this);
+      // 将第一次的出参作为第二次的入参，有初始值时，真实索引从 0 开始；无初始值时，真实索引从 1 开始
+      result = fn.call(null, result, arr[i], startIndex + i, this);
     }
     return result;
   }
 
-  console.log([1, 2, 3, 4].myReduce((prev, curr, index, thisArg) => prev + curr))
-  console.log([1, 2, 3, 4].myReduce((prev, curr, index, thisArg) => prev + curr, 10))
+  const cb = (prev, curr, index, thisArg) => {
+    console.log(prev, curr, index)
+    return prev + curr
+  }
+  console.log('reduce')
+  console.log('case1')
+  console.log([1, 2, 3, 4].myReduce(cb))
+  console.log('case2')
+  console.log([1, 2, 3, 4].reduce(cb))
+  console.log('case3')
+  console.log([1, 2, 3, 4].myReduce(cb, 10))
+  console.log('case4')
+  console.log([1, 2, 3, 4].reduce(cb, 10))
 }
 
 {

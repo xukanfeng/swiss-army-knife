@@ -230,7 +230,7 @@
 }
 
 {
-  async function asyncPool(tasks, poolLimit) {
+  async function asyncPool_v1(tasks, poolLimit) {
     const result = [];
     const executing = [];
     for (let task of tasks) {
@@ -247,12 +247,39 @@
     return Promise.all(result);
   }
 
+  function asyncPool_v2(tasks, poolLimit) {
+    return new Promise(resolve => {
+      const result = []
+      let count = 0
+      while (count < poolLimit) {
+        next()
+      }
+      // 和 v1 相比，相当于手动实现了 async/await
+      function next() {
+        // 初始化当前任务的 id
+        let current = count++
+        const task = tasks[current]
+        Promise.resolve(task()).then(res => {
+          result[current] = res
+        }).catch(err => {
+          result[current] = err
+        }).finally(() => {
+          if (count <= tasks.length) {
+            next()
+          } else {
+            resolve(result)
+          }
+        })
+      }
+    })
+  }
+
   const timeout = i => new Promise(resolve => setTimeout(() => {
-    /*console.log(i);*/
+    console.log(i);
     resolve(i)
   }, i));
   (async () => {
-    const results = await asyncPool([
+    const results = await asyncPool_v2([
       () => timeout(10),
       () => timeout(50),
       () => timeout(30),

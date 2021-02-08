@@ -16,7 +16,7 @@
   }]; // path: '[0].a.b[0]'
 
   function getValue(target, valuePath, defaultValue) {
-    const keys = valuePath.split(/[\[|\]|\.]/).filter(key => key !== '')
+    const keys = valuePath.split(/\[|\]|\./).filter(key => key !== '')
 
     let obj = target
     for (let key of keys) {
