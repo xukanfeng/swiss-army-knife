@@ -13,6 +13,25 @@
     return JSON.parse(`[${JSON.stringify(arr).replace(/\[|\]/g, '')}]`) // /[\[\]]/g
   }
   console.log(flatten2(arr))
+
+  const flatten3 = arr => {
+    return arr.toString().split(',').map(item => +item)
+  }
+  console.log(flatten3(arr))
+
+  const flatten4 = arr => {
+    const res = []
+    while (arr.length) {
+      let item = arr.shift()
+      if (Array.isArray(item)) {
+        arr.unshift(...item)
+      } else {
+        res.push(item)
+      }
+    }
+    return res
+  }
+  console.log(flatten4(arr))
 }
 
 {
