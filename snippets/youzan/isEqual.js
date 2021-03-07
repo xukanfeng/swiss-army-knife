@@ -5,6 +5,8 @@
    * 注意
    * - 数据类型不限于示例，尽可能考虑边界
    * - function 引用相等即可
+   *
+   * 2. 进阶：元素为复杂类型的数组去重
    */
   const foo1 = {
     a: 1,
@@ -45,6 +47,9 @@
           if (memo.has(target1)) return true
           else memo.add(target1)
         }
+        // 区分数组和对象
+        if ((!Array.isArray(target1) && Array.isArray(target2)) ||
+        (Array.isArray(target1) && !Array.isArray(target2))) return false
         // 长度不一样直接返回 false
         if (Object.keys(target1).length !== Object.keys(target2).length) return false
         // 统一处理数组和对象

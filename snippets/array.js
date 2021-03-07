@@ -6,18 +6,19 @@
       return prev.concat(Array.isArray(cur) ? flatten1(cur) : cur)
     }, [])
   }
-  console.log(flatten1(arr))
+  false && console.log(flatten1(arr))
 
   // 不能处理 ['[', ']'] !
   const flatten2 = arr => {
     return JSON.parse(`[${JSON.stringify(arr).replace(/\[|\]/g, '')}]`) // /[\[\]]/g
   }
-  console.log(flatten2(arr))
+  false && console.log(flatten2(arr))
 
+  // 处理的场景有限
   const flatten3 = arr => {
     return arr.toString().split(',').map(item => +item)
   }
-  console.log(flatten3(arr))
+  false && console.log(flatten3(arr))
 
   const flatten4 = arr => {
     const res = []
@@ -31,7 +32,7 @@
     }
     return res
   }
-  console.log(flatten4(arr))
+  false && console.log(flatten4(arr))
 }
 
 {
@@ -41,20 +42,20 @@
     arr.forEach((item, index) => arr.indexOf(item) === index && res.push(item))
     return res
   }
-  console.log(unique1(arr))
+  false && console.log(unique1(arr))
 
   const unique2 = (arr, res = []) => {
     arr.forEach(item => !res.includes(item) && res.push(item))
     return res
   }
-  console.log(unique2(arr))
+  false && console.log(unique2(arr))
 
   const unique3 = (arr, res = []) => {
     return arr.filter((item, index) => {
       return arr.indexOf(item) === index
     })
   }
-  console.log(unique3(arr))
+  false && console.log(unique3(arr))
 }
 
 {
@@ -89,6 +90,7 @@
     console.log(prev, curr, index)
     return prev + curr
   }
+  /*
   console.log('reduce')
   console.log('case1')
   console.log([1, 2, 3, 4].myReduce(cb))
@@ -98,6 +100,7 @@
   console.log([1, 2, 3, 4].myReduce(cb, 10))
   console.log('case4')
   console.log([1, 2, 3, 4].reduce(cb, 10))
+  */
 }
 
 {
@@ -113,5 +116,31 @@
     return result
   }
 
-  console.log([1, 2, 3, 4].myMap(n => n * 2))
+  false && console.log([1, 2, 3, 4].myMap(n => n * 2))
 }
+
+/**
+ * 多数组求交集
+ */
+function intersectN(arrs) {
+  function intersect2(arr1, arr2) {
+    const res = []
+    const map = {}
+    arr1.forEach(item => {
+      map[item] = map[item] ? map[item] + 1 : 1
+    })
+    arr2.forEach(item => {
+      if (map[item]) {
+        res.push(item)
+        map[item]--
+      }
+    })
+    return res
+  }
+  return arrs.reduce((prev, curr) => intersect2(prev, curr))
+}
+false && console.log(intersectN([
+  [1, 2, 2, 2, 3, 4, 5],
+  [1, 2, 2, 3, 5, 7],
+  [2, 2, 5, 1, 6]
+]))
