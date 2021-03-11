@@ -34,3 +34,18 @@
   })
   console.log(proxy.getDate()) // TypeError: this is not a Date object.
 }
+
+function autoBind(target) {
+  const cache = new WeakMap()
+  return new Proxy(target, {
+    get(target, prop) {
+      const value = Reflect.get(target, prop)
+      if (typeof value !== 'function')
+        return value
+      else {
+        if (!cache.has(value)) cache.set(value, value.bind(target))
+        return cache.get(value)
+      }
+    }
+  })
+}

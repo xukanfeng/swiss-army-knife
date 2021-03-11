@@ -51,9 +51,10 @@
         if ((!Array.isArray(target1) && Array.isArray(target2)) ||
         (Array.isArray(target1) && !Array.isArray(target2))) return false
         // 长度不一样直接返回 false
-        if (Object.keys(target1).length !== Object.keys(target2).length) return false
+        // 数组中可能会存在不可迭代的元素，需要 Refect.ownKeys 保证不遗漏
+        if (Reflect.ownKeys(target1).length !== Reflect.ownKeys(target2).length) return false
         // 统一处理数组和对象
-        for (let key of Object.keys(target1)) {
+        for (let key of Reflect.ownKeys(target1)) {
           if (!helper(target1[key], target2[key], memo)) return false
         }
         return true

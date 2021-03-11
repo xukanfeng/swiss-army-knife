@@ -74,14 +74,14 @@ false && console.log(JSON.stringify(transform([{
  * 对象拍平和展开
  */
 const entry = {
-  a:{
+  a: {
     b: {
       c: {
-        d:'1'
+        d: '1'
       }
     },
     d: {
-      e:'2'
+      e: '2'
     },
     e: {
       f: '3'
@@ -204,3 +204,21 @@ A = function () {
   console.log("后置钩子")
 }
 false && A()
+
+/**
+ * 实现add(one(two(one()))
+ */
+function add() {
+  return [...arguments[0]].reduce((a, b) => a + b)
+}
+
+function one() {
+  if (arguments.length === 0) return [1]
+  else return [...arguments[0], 1]
+}
+
+function two() {
+  if (arguments.length === 0) return [2]
+  else return [...arguments[0], 2]
+}
+false && console.log(add(one(two(one()))))

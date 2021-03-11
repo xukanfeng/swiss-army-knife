@@ -25,6 +25,9 @@
 
   // function.call(thisArg, arg1, arg2, ...)
   Function.prototype.myCall = function (context = window, ...args) {
+    if (typeof this !== 'function')
+      throw new TypeError()
+
     const fn = Symbol('fn')
     context[fn] = this
     const res = context[fn](...args)
@@ -35,10 +38,14 @@
 
   // function.bind(thisArg, arg1, arg2, ...)
   Function.prototype.myBind = function (context = window, ...args) {
+    if (typeof this !== 'function')
+      throw new TypeError()
+
     const self = this
     // new会改变this指向：如果bind绑定后的函数被new了，那么this指向会发生改变，指向当前函数的实例
     const fn = function () {
-      self.apply(this instanceof self /* new.target */ ? this : context, [...args, ...arguments])
+      if (!self.prototype) throw new TypeError() // 箭头函数 new 时应该抛出异常
+      return self.apply(this instanceof self /* new.target */ ? this : context, [...args, ...arguments])
     }
     // 继承原型上的属性和方法
     if (self.prototype) // 箭头函数没有 prototype
@@ -86,7 +93,7 @@
     this.name = name
   }
 
-  function BooWithReturn() {
+  function BooWithReturn(name) {
     this.name = name
     return {
       age: 18
@@ -181,7 +188,7 @@
   }
   Object.defineProperty(obj, "c", {
     value: 3,
-    numberable: "false"
+    enumberable: "false"
   })
   obj.__proto__.d = 4
   obj.__proto__ = Object.create({})
@@ -204,3 +211,18 @@
   console.log("### Reflect.ownKeys ###")
   Reflect.ownKeys(obj).forEach(key => console.log("key:", key, "value:", obj[key]))
 }
+
+function isPlainObject(obj) {
+  if (typeof obj !== 'object' && obj !== null) return false
+
+  let proto = obj
+  while (Object.getPrototypeOf(proto) !== null) {
+    proto = Object.getPrototypeOf(proto)
+  }
+  return Object.getPrototypeOf(obj) === proto
+}
+false && console.log(isPlainObject({
+  a: 1
+}), isPlainObject(Object.create({
+  a: 1
+})))
