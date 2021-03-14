@@ -15,22 +15,6 @@
   }
   console.log("curry add", add(1)(2)(3, 4, 5)(6, 7))
 
-  function curry_v1(fn) {
-    const args = []
-    return function result(...rest) {
-      if (rest.length === 0) {
-        return fn(...args)
-      } else {
-        args.push(...rest)
-        return result
-      }
-    }
-  }
-  const curryAdd_v1 = curry_v1(function (a, b, c, d, e) {
-    return [...arguments].reduce((a, b) => a + b)
-  })
-  console.log("curry add", curryAdd_v1(1)(2, 3)(4, 5, 6)())
-
   // 历史参数保存在绑定过的函数中，根据当前的参数数量和所需的剩余参数数量判断是否结束
   function curry_v2(fn, length) {
     length = length || fn.length // 使用 fn.length 获取函数参数个数

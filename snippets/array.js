@@ -1,5 +1,10 @@
+/**
+ * 判断数组方式：
+ * arr instanceof Array 不同执行环境不共享原型链，不可靠
+ * arr.constructor === Array constructor 可能会被重写，不可靠
+ */
 {
-  const arr = [1, [2, [3, [4, 5]]], 6]
+  const arr = [1, [2, [3, [4, 5]]], 6, , , ]
 
   const flatten1 = arr => {
     return arr.reduce((prev, cur) => {
@@ -8,24 +13,35 @@
   }
   false && console.log(flatten1(arr))
 
-  // 不能处理 ['[', ']'] !
+  // 通过参数控制 flat 层数
+  const flatten1_layer = (arr, num = 1) => {
+    return num > 0 ? arr.reduce((prev, cur) => {
+      return prev.concat(Array.isArray(cur) ? flatten1_layer(cur, num - 1) : cur)
+    }, []) : arr.slice()
+  }
+  false && console.log(flatten1_layer(arr, Infinity))
+
+  // 不能处理 ['[', ']'] !，不能处理空位，空位被处理成 null
   const flatten2 = arr => {
     return JSON.parse(`[${JSON.stringify(arr).replace(/\[|\]/g, '')}]`) // /[\[\]]/g
   }
   false && console.log(flatten2(arr))
 
-  // 处理的场景有限
+  // 处理的场景有限，不能处理空位，空位被处理成 0
   const flatten3 = arr => {
     return arr.toString().split(',').map(item => +item)
   }
   false && console.log(flatten3(arr))
 
+  // 不能处理空位，空位被处理成 undefined
   const flatten4 = arr => {
     const res = []
-    while (arr.length) {
-      let item = arr.shift()
+    // 避免修改原数组
+    const stack = [].concat(arr)
+    while (stack.length) {
+      let item = stack.shift()
       if (Array.isArray(item)) {
-        arr.unshift(...item)
+        stack.unshift(...item)
       } else {
         res.push(item)
       }
@@ -33,6 +49,14 @@
     return res
   }
   false && console.log(flatten4(arr))
+
+  Array.prototype.flatten5 = function() {
+    return this.reduce((prev, cur) => {
+      // 注意 cur.flatten5()
+      return prev.concat(Array.isArray(cur) ? cur.flatten5() : cur)
+    }, [])
+  }
+  console.log(arr.flatten5(), arr)
 }
 
 {

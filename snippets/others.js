@@ -222,3 +222,38 @@ function two() {
   else return [...arguments[0], 2]
 }
 false && console.log(add(one(two(one()))))
+
+/**
+ * 判断是否是质数
+ */
+function isPrime(n) {
+  const m = Math.sqrt(n)
+  for (let i = 2; i <= m; i++) {
+    if (n % i === 0) return false
+  }
+  return true
+}
+false && console.log(isPrime(11))
+
+/**
+ * n以内的质数数量(不包含n)
+ * 排除法
+ */
+function countPrime(n) {
+  const primes = new Array(n).fill(true)
+  // 注意 i * i
+  for (let i = 2; i * i < n; i++) {
+    if (primes[i]) {
+      // 注意 i * i; j += i
+      for (let j = i * i; j < n; j += i) {
+        primes[j] = false
+      }
+    }
+  }
+  let count = 0
+  for (let i = 2; i < n; i++) {
+    if (primes[i]) count++
+  }
+  return count
+}
+console.log(countPrime(5))

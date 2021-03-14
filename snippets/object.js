@@ -58,7 +58,7 @@
 }
 
 {
-  Object.myCreate = function (obj) {
+  Object.prototype.myCreate = function (obj) {
     const Fn = function () {}
     Fn.prototype = obj
     const fn = new Fn()
@@ -123,9 +123,13 @@
 }
 
 {
+  // babel编译
   function _extends(child, parent) {
     child.prototype = Object.create(parent.prototype)
     child.prototype.constructor = child
+
+    // 继承父类的静态方法
+    if (parent) Object.setPrototypeOf ? Object.setPrototypeOf(child, parent) : child.__proto__ = parent
   }
 
   function B(name) {
@@ -212,6 +216,7 @@
   Reflect.ownKeys(obj).forEach(key => console.log("key:", key, "value:", obj[key]))
 }
 
+// 不同执行环境不会共享原型链，因此不能用 Object.getPrototypeOf(obj) === Object.prototype 判断
 function isPlainObject(obj) {
   if (typeof obj !== 'object' && obj !== null) return false
 
@@ -226,3 +231,24 @@ false && console.log(isPlainObject({
 }), isPlainObject(Object.create({
   a: 1
 })))
+
+/**
+ * 模拟实现 Array.prototype.map
+ * callbackfn: (value: any, index: number, array: any[]) => any
+ */
+Object.prototype.map = function (callbackFn, thisArg) {
+  const res = {}
+  for (let prop in this) {
+    if (this.hasOwnProperty(prop))
+      res[prop] = callbackFn.call(thisArg, this[prop], prop, this)
+  }
+  return res
+}
+const obj = {
+    name: 'alice',
+    age: '18'
+}
+console.log(obj.map(function(val, prop, obj) {
+  console.log(this, val, prop, obj)
+  return prop + '-->' + val
+}, { name: 'bob' }))
