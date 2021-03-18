@@ -45,15 +45,22 @@
 
   // 使用 Promise 实现自执行
   function run_v2(fn) {
-    const g = fn()
+    return new Promise((resolve, reject) => {
+      const g = fn()
 
-    function next(data) {
-      const result = g.next(data)
-      if (result.done) return result.value
-      Promise.resolve(result.value).then(next)
-    }
+      function next(data) {
+        let result
+        try {
+          result = g.next(data)
+        } catch(e) {
+          reject(e)
+        }
+        if (result.done) return resolve(result.value)
+        Promise.resolve(result.value).then(next).catch(g.throw)
+      }
 
-    next()
+      next()
+    })
   }
 
   // test cases
