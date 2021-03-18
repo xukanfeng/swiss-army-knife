@@ -72,7 +72,7 @@
           try {
             // 执行第一个(当前的)Promise的成功回调,并获取返回值
             let x = resolveFn(value)
-            // 分类讨论返回值,如果是Promise,那么等待Promise状态变更,否则直接resolve
+            // 分类讨论返回值,如果是Promise,那么等待Promise状态变更,并把 (resolve, reject) 透传下去来处理结果,否则直接resolve
             x instanceof MyPromise ? x.then(resolve, reject) : resolve(x)
           } catch (error) {
             reject(error)
@@ -116,7 +116,7 @@
       return new MyPromise((resolve, reject) => reject(reason))
     }
 
-    catch (rejectFn) {
+    catch(rejectFn) {
       return this.then(undefined, rejectFn)
     }
 
@@ -174,11 +174,11 @@
   }
 
   // test case
-  const p1 = new MyPromise((resolve, reject) => {
+  const p1 = new MyPromise((resolve) => {
     resolve(1) //同步executor测试
   })
 
-  p1
+  false && p1
     .then(res => {
       console.log(res)
       return 2 //链式调用测试
@@ -211,7 +211,7 @@
       console.log(err)
     })
 
-  new MyPromise(resolve => {
+  false && new MyPromise(resolve => {
     setTimeout(() => resolve(5), 500)
   }).then(res => {
     console.log(res)
@@ -234,12 +234,21 @@
     const result = [];
     const executing = [];
     for (let task of tasks) {
-      const promise = Promise.resolve(task())
+      const promise = new Promise(resolve => {
+        Promise.resolve(task()).then(res => {
+          resolve(res)
+          // finally 执行时机不确定，不能在 finally 里处理删除逻辑
+          executing.splice(executing.indexOf(promise), 1)
+        }).catch(err => {
+          // 如果不捕获异常，最后调用 Promise.all 时还是会抛出异常。应该在出现异常后将异常 resolve 为 result
+          resolve(err)
+          executing.splice(executing.indexOf(promise), 1)
+        })
+      })
       // promise resolve 后，结果保存在 result中
       result.push(promise)
       // 保存正在执行的 promise
       executing.push(promise)
-      promise.then(() => executing.splice(executing.indexOf(promise), 1))
       if (executing.length >= poolLimit) {
         await Promise.race(executing)
       }
@@ -264,9 +273,10 @@
         }).catch(err => {
           result[current] = err
         }).finally(() => {
-          if (count <= tasks.length) {
+          if (count <= tasks.length - 1) {
             next()
-          } else {
+          } 
+          if (current === tasks.length - 1) {
             resolve(result)
           }
         })
@@ -274,11 +284,12 @@
     })
   }
 
-  const timeout = i => new Promise(resolve => setTimeout(() => {
+  const timeout = i => new Promise((resolve, reject) => setTimeout(() => {
     console.log(i);
+    if (i === 50) reject(i)
     resolve(i)
   }, i));
-  (async () => {
+  false && (async () => {
     const results = await asyncPool_v2([
       () => timeout(10),
       () => timeout(50),
@@ -299,15 +310,32 @@
     array.forEach(item => {
         p = p.then(() => item()).then(r => {res.push(r); return res;})
     })
-    return p
     */
 
-    return array.reduce((prev, cur) => prev.then(() => cur()).then(r => {
+    let p = array.reduce((prev, cur) => prev.then(() => cur()).then(r => {
       res.push(r);
       return res;
+      // 异常处理方案一：把异常作为 result 返回，不打断流程
+    }).catch(e => {
+      res.push(e);
+      return res;
     }), Promise.resolve())
+
+    return p
+
+    // 异常处理方案三：用 Promise 再封装一层，做更多的错误处理
+    return new Promise((resolve, reject) => p.then(resolve).catch(e => {
+      // 直接抛出错误，等同方案二
+      reject(e)
+      // 或者返回当前的所有结果
+      res.push(e)
+      reject(res)
+    }))
   }
-  mergePromise([timer(3, 300), timer(2, 200), timer(1, 100)]).then(res => console.log("#", res))
+  false && mergePromise([timer(3, 300), timer(2, 200), timer(1, 100)])
+  .then(res => console.log("#", res))
+  // 异常处理方案二：出现异常后打断流程，直接抛出错误
+  .catch(err => console.log("$", err))
 }
 
 {
@@ -342,7 +370,7 @@
     })
   }
 
-  Promise.myAllSettled(promises)
+  false && Promise.myAllSettled(promises)
 }
 
 {
@@ -378,9 +406,11 @@
       .then(() => console.log(order))
   }
 
-  addTask(1000, '1')
-  addTask(500, '2')
-  addTask(300, '3')
-  addTask(400, '4')
-  // output: 2 3 1 4
+  false && (() => {
+    addTask(1000, '1')
+    addTask(500, '2')
+    addTask(300, '3')
+    addTask(400, '4')
+    // output: 2 3 1 4
+  })()
 }

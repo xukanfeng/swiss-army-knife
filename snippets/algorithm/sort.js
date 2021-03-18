@@ -67,8 +67,55 @@
 
   const nums = [6, 3, 5, 4, 7, 9, 5, 2, 5, 8]
   quickSort(nums)
-  console.log(nums)
+  false && console.log(nums)
 
   mergeSort(nums)
-  console.log(nums)
+  false && console.log(nums)
 }
+
+function bubbleSort(arr) {
+  const len = arr.length
+  for (let i = 0; i < len - 1; i++) {
+    for (let j = 0; j < len - 1 - i; j++) {
+      if (arr[j] > arr[j + 1]) { // 相邻元素两两对比
+        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]
+      }
+    }
+  }
+  return arr
+}
+
+function selectionSort(arr) {
+  const len = arr.length
+  let minIndex
+  for (let i = 0; i < len - 1; i++) {
+    minIndex = i
+    for (let j = i + 1; j < len; j++) {
+      if (arr[j] < arr[minIndex]) { // 寻找最小的数
+        minIndex = j
+      }
+    }
+    [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]]
+  }
+  return arr;
+}
+
+function insertionSort(arr) {
+  const len = arr.length
+  let preIndex, current
+  for (let i = 1; i < len; i++) {
+    preIndex = i - 1
+    current = arr[i]
+    while (preIndex >= 0 && arr[preIndex] > current) {
+      arr[preIndex + 1] = arr[preIndex]
+      preIndex--
+    }
+    arr[preIndex + 1] = current
+  }
+  return arr
+}
+
+const nums = [6, 3, 5, 4, 7, 9, 5, 2, 5, 8]
+console.log(bubbleSort(nums))
+console.log(selectionSort(nums))
+console.log(insertionSort(nums))

@@ -50,7 +50,7 @@
   }
   false && console.log(flatten4(arr))
 
-  Array.prototype.flatten5 = function() {
+  Array.prototype.flatten5 = function () {
     return this.reduce((prev, cur) => {
       // 注意 cur.flatten5()
       return prev.concat(Array.isArray(cur) ? cur.flatten5() : cur)
@@ -168,3 +168,12 @@ false && console.log(intersectN([
   [1, 2, 2, 3, 5, 7],
   [2, 2, 5, 1, 6]
 ]))
+
+function shuffle(arr) {
+  for (let i = arr.length; i; i--) {
+    let j = Math.floor(Math.random() * i);
+    [arr[i - 1], arr[j]] = [arr[j], arr[i - 1]];
+  }
+  return arr;
+}
+false && console.log(shuffle([5, 3, 5, 6, 7, 3, 1, 4, 6, 1]))

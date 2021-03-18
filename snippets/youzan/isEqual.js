@@ -38,6 +38,10 @@
   }
   foo2.h = foo2
 
+  /**
+   * 1.如果把基本类型和对应的包装类型视为相同，可以用隐式转换，例如 +(1) === +(new Number(1))
+   * 2.判断构造函数实例时，还需要考虑构造函数是否相同
+   */
   function isEqual(target1, target2) {
     function helper(target1, target2, memo = new WeakSet()) {
       // 处理数组和对象

@@ -17,7 +17,7 @@
     once(event, listener) {
       const wrapper = (...args) => {
         listener.apply(this, args)
-        this.off(event, listener)
+        this.off(event, wrapper)
       }
       this.on(event, wrapper)
     }
@@ -38,7 +38,7 @@
         // 如果没有 listener，移除全部 listener
         this.map[event].length = 0
       } else {
-        this.map[event] = this.map[event].filter(cb => cb === listener)
+        this.map[event] = this.map[event].filter(cb => cb !== listener)
       }
     }
   }
@@ -54,12 +54,11 @@
   event.emit('event', 1, 2)
 
   event.off('event', foo1)
-  event.off('event', foo2)
   console.log('EventHub off')
   event.emit('event', 1, 2)
 
   console.log('EventHub once')
   event.once('event', foo1)
-  event.off('event', foo1)
+  event.emit('event', 1, 2)
   event.emit('event', 1, 2)
 }
