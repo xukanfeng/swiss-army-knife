@@ -237,7 +237,7 @@
       const promise = new Promise(resolve => {
         Promise.resolve(task()).then(res => {
           resolve(res)
-          // finally 执行时机不确定，不能在 finally 里处理删除逻辑
+          // 在这个有 Promise.race 的场景下，finally 执行时机不确定，为什么？
           executing.splice(executing.indexOf(promise), 1)
         }).catch(err => {
           // 如果不捕获异常，最后调用 Promise.all 时还是会抛出异常。应该在出现异常后将异常 resolve 为 result
@@ -275,7 +275,7 @@
         }).finally(() => {
           if (count <= tasks.length - 1) {
             next()
-          } 
+          }
           if (current === tasks.length - 1) {
             resolve(result)
           }
@@ -289,7 +289,7 @@
     if (i === 50) reject(i)
     resolve(i)
   }, i));
-  false && (async () => {
+  (async () => {
     const results = await asyncPool_v2([
       () => timeout(10),
       () => timeout(50),
@@ -333,9 +333,9 @@
     }))
   }
   false && mergePromise([timer(3, 300), timer(2, 200), timer(1, 100)])
-  .then(res => console.log("#", res))
-  // 异常处理方案二：出现异常后打断流程，直接抛出错误
-  .catch(err => console.log("$", err))
+    .then(res => console.log("#", res))
+    // 异常处理方案二：出现异常后打断流程，直接抛出错误
+    .catch(err => console.log("$", err))
 }
 
 {
@@ -414,3 +414,34 @@
     // output: 2 3 1 4
   })()
 }
+
+function promiseWithAbort(promise) {
+  let _abort = null
+  /*
+  const abort = new Promise((resolve, reject) => {
+    // _abort 内存在 reject 的引用，因此可以在外部调用到 reject
+    _abort = () => reject('abort')
+  })
+  const p = Promise.race([promise, abort])
+  */
+  const p = new Promise((resolve, reject) => {
+    _abort = () => reject('abort')
+    promise.then(resolve, reject)
+  })
+  /*
+  let controller = new AbortController()
+  let signal = controller.signal
+  const p = new Promise((resolve, reject) => {
+    signal.addEventListener('abort', () => reject('abort'))
+    // 只是为了保持和其他方案一样返回 _abort 才这么写
+    _abort = controller.abort.bind(controller)
+    promise.then(resolve, reject)
+  })
+  */
+
+  p.abort = _abort
+  return p
+}
+const p = promiseWithAbort(new Promise(resolve => setTimeout(() => resolve(1), 3000)))
+false && p.then(res => console.log(res)).catch(e => console.log(e))
+false && p.abort()
