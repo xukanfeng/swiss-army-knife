@@ -1,28 +1,4 @@
 {
-  function generateParenthesis(n) {
-    const ans = []
-
-    function backtrack(left, right, track) {
-      if (left === n && right === n) {
-        ans.push([...track])
-        return
-      }
-      if (left > n || right > n || left < right) return
-
-      track.push("(")
-      backtrack(left + 1, right, track)
-      track.pop()
-
-      track.push(")")
-      backtrack(left, right + 1, track)
-      track.pop()
-    }
-    backtrack(0, 0, [])
-
-    return ans
-  }
-  // console.log("generateParenthesis", generateParenthesis(3))
-
   function subset(arr) {
     const ans = []
 
@@ -60,26 +36,4 @@
     return ans
   }
   // console.log("combination", combination([1,2,3,4], 2))
-
-  function permutation(arr) {
-    const ans = []
-
-    function backtrack(arr, track) {
-      if (track.length === arr.length) {
-        ans.push([...track])
-        return
-      }
-      for (let i = 0; i < arr.length; i++) {
-        if (track.indexOf(arr[i]) !== -1) continue
-
-        track.push(arr[i])
-        backtrack(arr, track)
-        track.pop()
-      }
-    }
-    backtrack(arr, [])
-
-    return ans
-  }
-  // console.log("permutation", permutation([1,2,3]))
 }
