@@ -123,64 +123,53 @@
 }
 
 {
-  // babel编译
-  function _extends(child, parent) {
-    child.prototype = Object.create(parent.prototype)
-    child.prototype.constructor = child
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function");
+    }
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        writable: true,
+        configurable: true,
+      }
+    })
+    // subClass.prototype.constructor = subClass
 
     // 继承父类的静态方法
-    if (parent) Object.setPrototypeOf ? Object.setPrototypeOf(child, parent) : child.__proto__ = parent
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass
   }
 
-  function B(name) {
-    this.name = name
-    this.age = 18
-  }
-  const A = (function (_super) {
-    _extends(A, _super)
+  var B = (function (_super) {
+    _inherits(B, _super)
 
-    function A(name, sex) {
+    function B(name, sex) {
       this.sex = sex
-      return (_super !== null && _super.call(this, name)) || this
+      return (_super !== null && _super.call(this, name)) || this // 不继承时返回自身
     }
-    return A
-  })(B)
-  console.log('_extends', new A('Alice', 'female'), new B('Bob'))
-}
+    // 定义 B 的其他方法
+    // B.prototype.speak = function () {}
+    return B
+  })(A) // A 可以为 null，表示不继承于任何父类
 
-{
-  function _extends(Sub, Super) {
-    Sub.prototype = Object.create(Super.prototype)
-    Sub.prototype.constructor = Sub
+  function A(name) {
+    this.name = name
   }
-
-  function SuperType(name) {
-    this.name = name;
-    this.colors = ["red", "blue", "green"];
-  }
-  SuperType.prototype.sayName = function () {
+  A.prototype.speak = function () {
     console.log(this.name);
   };
-
-  function SubType(name, age) {
-    SuperType.call(this, name);
-
-    this.name = "sub: " + this.name
-    this.age = age
+  // 静态方法
+  A.walk = function () {
+    console.log('walking...')
   }
 
-  _extends(SubType, SuperType)
-  SubType.prototype.sayAge = function () {
-    console.log(this.age)
-  }
-
-  // test
-  const sub = new SubType("alice", "18")
-  sub.colors.push("yellow")
-  console.log(sub)
-  sub.sayName()
-  sub.sayAge()
-  console.log(new SuperType("bob"))
+  const a = new A('Alice')
+  const b = new B('Bob', 'male')
+  console.log('_inherits', a, b)
+  a.speak()
+  A.walk()
+  b.speak()
+  B.walk()
 }
 
 {
@@ -245,10 +234,12 @@ Object.prototype.map = function (callbackFn, thisArg) {
   return res
 }
 const obj = {
-    name: 'alice',
-    age: '18'
+  name: 'alice',
+  age: '18'
 }
-console.log(obj.map(function(val, prop, obj) {
+console.log(obj.map(function (val, prop, obj) {
   console.log(this, val, prop, obj)
   return prop + '-->' + val
-}, { name: 'bob' }))
+}, {
+  name: 'bob'
+}))
