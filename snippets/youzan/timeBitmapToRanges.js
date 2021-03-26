@@ -18,25 +18,14 @@
 
     const array = str.split('')
     const ans = []
-    let start = 0,
-      end = -1
-
-    for (let i = 0; i < array.length; i++) {
-      if (array[i] === '0' && array[start] === '0') {
-        start++
-        end++
-      } else if (array[i] === '1' && array[start] === '0') {
-        start = i
-        end = i
-      } else if (array[i] === '1' && array[start] === '1') {
-        end++
-        if (i === array.length - 1) {
-          ans.push(formator(start) + '~' + formator(end + 1))
-        }
-      } else if (array[i] === '0' && array[start] === '1') {
-        ans.push(formator(start) + '~' + formator(end + 1))
-        start = i
-        end = i
+    let i = 0,
+      j = 0
+    while (j < array.length) {
+      if (array[j] === '0') j++
+      else {
+        i = j
+        while (j < array.length && array[j] === '1') j++
+        ans.push(formator(i) + '~' + formator(j))
       }
     }
     return ans

@@ -16,25 +16,3 @@ function restoreCards(arr) {
   return origin
 }
 false && console.log(restoreCards([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]))
-
-/**
- * 原地将数组中的 0 移动到最后
- */
-function moveZero(arr) {
-  let slow = 0
-  let fast = 0
-  while (fast < arr.length) {
-    if (arr[slow] !== 0) {
-      slow++
-    } else {
-      if (arr[fast] !== 0) {
-        [arr[slow], arr[fast]] = [arr[fast], arr[slow]]
-        slow++
-      }
-    }
-    fast++
-  }
-}
-const arr = [1, 0, 0, 2, 3, 0, 1, 4, 0, 0, 0, 0, 0, 0]
-moveZero(arr)
-false && console.log(arr)

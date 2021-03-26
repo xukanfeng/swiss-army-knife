@@ -5,11 +5,7 @@
     children: []
   }
 
-  function render(vnode, container) {
-    container.appendChild(createNode(vnode))
-  }
-
-  function createNode(vnode) {
+  function render(vnode) {
     if (typeof vnode === 'string') {
       return document.createTextNode(vnode)
     }
@@ -19,7 +15,7 @@
         dom.setAttribute(entry[0], entry[1])
       })
     }
-    vnode.children.forEach(child => render(child, dom))
+    vnode.children.forEach(child => dom.appendChild(render(child)))
     return dom
   }
 }
