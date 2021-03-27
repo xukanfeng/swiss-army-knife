@@ -55,8 +55,8 @@
         } catch(e) {
           reject(e)
         }
-        if (result.done) return resolve(result.value)
-        Promise.resolve(result.value).then(next).catch(g.throw)
+        if (result.done) resolve(result.value)
+        else Promise.resolve(result.value).then(next).catch(g.throw)
       }
 
       next()
@@ -73,7 +73,7 @@
     console.log("r6", r6)
     return r6
   }
-  run_v2(gen2)
+  run_v2(gen2).then(res => console.log(res))
 }
 
 {

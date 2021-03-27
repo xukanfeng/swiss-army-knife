@@ -18,6 +18,37 @@
     vnode.children.forEach(child => dom.appendChild(render(child)))
     return dom
   }
+
+  class vNode {
+    constructor(tag, attr, children) {
+      this.tag = tag
+      this.attr = attr
+      this.children = children
+    }
+    render() {
+      return render(this)
+    }
+  }
+
+  function el(tag, attr, children) {
+    return new vNode(tag, attr, children)
+  }
+
+  const ul = el('ul', {id: 'list'}, [
+    el('li', {class: 'item'}, ['Item 1']),
+    el('li', {class: 'item'}, ['Item 2']),
+    el('li', {class: 'item'}, ['Item 3'])
+  ])
+  const ulRoot = ul.render();
+  document.body.appendChild(ulRoot);
+
+  /*
+  <ul id='list'>
+    <li class='item'>Item 1</li>
+    <li class='item'>Item 2</li>
+    <li class='item'>Item 3</li>
+  </ul>
+  */
 }
 
 {

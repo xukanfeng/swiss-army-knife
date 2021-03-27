@@ -32,6 +32,10 @@
         return res // 将处理结果往外传
     }
 
+    function compose(funcs) {
+        // next 会作为 args 传入
+        return funcs.reduce((a, b) => (...args) => a(b(...args)))
+    }
     const plusThenDouble = compose([plus1, plus2, plus3, plus4])(double) // double 就是 next
     // plusThenDouble(0)
 }

@@ -94,7 +94,7 @@
   Array.prototype.myReduce = function (fn, initialValue) {
     let arr = [].slice.call(this);
     let startIndex = 0;
-    // 通过判断入参长度，可以避免过滤initialValue传入的非法值（0,undifind,...）
+    // 通过判断入参长度，可以避免过滤initialValue传入的非法值（0,undifined,...）
     if (arguments.length === 2) {
       arr.unshift(initialValue);
       startIndex = -1

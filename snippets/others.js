@@ -234,3 +234,24 @@ function isPrime(n) {
   return true
 }
 false && console.log(isPrime(11))
+
+/**
+ * 从每个数组中抽取一个元素，求所有组合
+ */
+function combination(arrs) {
+  // 初始化
+  let ans = arrs.shift()
+  arrs.forEach(arr => {
+    let tmp = []
+    arr.forEach(item => {
+      // 复制当前结果
+      const copy = [...ans]
+      // 在当前结果的每个字符串后添加新字符
+      tmp = tmp.concat(copy.map(str => str += item))
+    })
+    // 更新结果
+    ans = tmp
+  })
+  return ans
+}
+console.log(combination([['a', 'b'], ['A', 'B'], ['0', '1', '2']]))
