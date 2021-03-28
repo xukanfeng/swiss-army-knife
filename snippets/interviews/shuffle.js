@@ -2,10 +2,10 @@
  * 洗牌算法
  */
 function shuffle(arr) {
-  for (let i = arr.length; i; i--) {
-    let j = Math.floor(Math.random() * i);
-    [arr[i - 1], arr[j]] = [arr[j], arr[i - 1]];
+  for (let i = arr.length - 1; i >= 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
   }
-  return arr;
+  return arr
 }
-false && console.log(shuffle([5, 3, 5, 6, 7, 3, 1, 4, 6, 1]))
+console.log(shuffle([5, 3, 5, 6, 7, 3, 1, 4, 6, 1]))
