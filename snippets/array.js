@@ -142,38 +142,3 @@
 
   false && console.log([1, 2, 3, 4].myMap(n => n * 2))
 }
-
-/**
- * 多数组求交集
- */
-function intersectN(arrs) {
-  function intersect2(arr1, arr2) {
-    const res = []
-    const map = {}
-    arr1.forEach(item => {
-      map[item] = map[item] ? map[item] + 1 : 1
-    })
-    arr2.forEach(item => {
-      if (map[item]) {
-        res.push(item)
-        map[item]--
-      }
-    })
-    return res
-  }
-  return arrs.reduce((prev, curr) => intersect2(prev, curr))
-}
-false && console.log(intersectN([
-  [1, 2, 2, 2, 3, 4, 5],
-  [1, 2, 2, 3, 5, 7],
-  [2, 2, 5, 1, 6]
-]))
-
-function shuffle(arr) {
-  for (let i = arr.length; i; i--) {
-    let j = Math.floor(Math.random() * i);
-    [arr[i - 1], arr[j]] = [arr[j], arr[i - 1]];
-  }
-  return arr;
-}
-false && console.log(shuffle([5, 3, 5, 6, 7, 3, 1, 4, 6, 1]))

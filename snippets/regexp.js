@@ -25,12 +25,3 @@ function getUrlParams(url) {
   return url.match(/[^?&]([^=?&]*)=([^&#]*)/g)
 }
 false && console.log(getUrlParams('http://www.baidu.com?search=111&aa=1&b=22#ccc'))
-
-/**
- * 模板替换
- */
-function render(template, context) {
-  // 注意(.*?)
-  return template.replace(/{{(.*?)}}/g, (match, key) => context[key.trim()])
-}
-false && console.log(render('{{name}} is {{ age }} years old', {name: 'alice', age: 18}))

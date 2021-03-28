@@ -1,4 +1,7 @@
 {
+  /**
+   * 实现 add 函数
+   */
   function add() {
     const _args = [...arguments]
 
