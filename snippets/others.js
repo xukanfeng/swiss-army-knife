@@ -65,9 +65,10 @@ function isPrime(n) {
 false && console.log(isPrime(11))
 
 /**
+ * sku 组合数
  * 从每个数组中抽取一个元素，求所有组合
  */
-function combination(arrs) {
+function combination_v1(arrs) {
   // 初始化
   let ans = arrs.shift()
   arrs.forEach(arr => {
@@ -83,4 +84,29 @@ function combination(arrs) {
   })
   return ans
 }
-console.log(combination([['a', 'b'], ['A', 'B'], ['0', '1', '2']]))
+
+// 回溯法
+function combination_v2(arrs) {
+  const ans = []
+
+  function backtrack(track, start) {
+    if (start === arrs.length) {
+      ans.push([...track])
+      return
+    }
+    for (let i = 0; i < arrs[start].length; i++) {
+      track.push(arrs[start][i])
+      backtrack(track, start + 1)
+      track.pop()
+    }
+  }
+  backtrack([], 0)
+
+  return ans
+}
+
+console.log(combination_v2([
+  ['a', 'b'],
+  ['A', 'B'],
+  ['0', '1', '2']
+]))

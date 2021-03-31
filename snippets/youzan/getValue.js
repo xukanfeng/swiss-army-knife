@@ -21,7 +21,7 @@
     let obj = target
     for (let key of keys) {
       obj = obj[key]
-      if (!obj) return defaultValue
+      if (obj === undefined) return defaultValue
     }
     return obj
   }

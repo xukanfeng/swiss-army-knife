@@ -142,3 +142,77 @@
 
   false && console.log([1, 2, 3, 4].myMap(n => n * 2))
 }
+
+{
+  Array.prototype.mySplice = function (start, deleteCount, ...items) {
+    if (start < 0) {
+      start += this.length
+      if (start < 0) {
+        start = 0
+      }
+    }
+    let end
+    if (deleteCount === undefined) {
+      end = this.length
+    } else {
+      if (deleteCount <= 0) {
+        end = start
+      } else {
+        end = start + deleteCount
+        if (end > this.length) {
+          end = this.length
+        }
+      }
+    }
+    const deletedArray = [...this.slice(start, end)]
+    const newArray = [...this.slice(0, start), ...items, ...this.slice(end)]
+    newArray.forEach((item, i) => this[i] = item)
+    // 更新数组长度
+    this.length = newArray.length
+    return deletedArray
+  }
+  console.log('splice test')
+  let arr1, arr2
+  arr1 = [1, 2, 3, 4, 5, 6, 7]
+  arr2 = [1, 2, 3, 4, 5, 6, 7]
+  console.log('case1')
+  console.log(arr1, arr1.splice(2))
+  console.log(arr2, arr2.mySplice(2))
+  console.log('case2')
+  console.log(arr1, arr1.splice(20))
+  console.log(arr2, arr2.mySplice(20))
+  console.log('case3')
+  console.log(arr1, arr1.splice(-2))
+  console.log(arr2, arr2.mySplice(-2))
+  console.log('case4')
+  console.log(arr1, arr1.splice(-20))
+  console.log(arr2, arr2.mySplice(-20))
+  arr1 = [1, 2, 3, 4, 5, 6, 7]
+  arr2 = [1, 2, 3, 4, 5, 6, 7]
+  console.log('case5')
+  console.log(arr1, arr1.splice(2, 1))
+  console.log(arr2, arr2.mySplice(2, 1))
+  console.log('case6')
+  console.log(arr1, arr1.splice(-2, 1))
+  console.log(arr2, arr2.mySplice(-2, 1))
+  console.log('case7')
+  console.log(arr1, arr1.splice(-2, -1))
+  console.log(arr2, arr2.mySplice(-2, -1))
+  console.log('case8')
+  console.log(arr1, arr1.splice(2, 20))
+  console.log(arr2, arr2.mySplice(2, 20))
+  arr1 = [1, 2, 3, 4, 5, 6, 7]
+  arr2 = [1, 2, 3, 4, 5, 6, 7]
+  console.log('case9')
+  console.log(arr1, arr1.splice(2, 1, [1, 2, 3]))
+  console.log(arr2, arr2.mySplice(2, 1, [1, 2, 3]))
+  console.log('case10')
+  console.log(arr1, arr1.splice(-2, 1, [1, 2, 3]))
+  console.log(arr2, arr2.mySplice(-2, 1, [1, 2, 3]))
+  console.log('case11')
+  console.log(arr1, arr1.splice(2, 20, [1, 2, 3]))
+  console.log(arr2, arr2.mySplice(2, 20, [1, 2, 3]))
+  console.log('case12')
+  console.log(arr1, arr1.splice(2, -2, 11, 12))
+  console.log(arr2, arr2.mySplice(2, -2, 11, 12))
+}
