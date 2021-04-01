@@ -91,23 +91,20 @@
 
 {
   // reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: readonly T[]) => T): T
-  Array.prototype.myReduce = function (fn, initialValue) {
-    let arr = [].slice.call(this);
-    let startIndex = 0;
-    // 通过判断入参长度，可以避免过滤initialValue传入的非法值（0,undifined,...）
-    if (arguments.length === 2) {
-      arr.unshift(initialValue);
-      startIndex = -1
+  Array.prototype.myReduce = function () {
+    const hasInitialValue = args.length > 1
+    // 数组为空，且没有初始值时，抛出异常
+    if (!hasInitialValue && this.length === 0) {
+      throw new Error()
     }
-    let result = arr[0];
-    for (let i = 1; i < arr.length; i++) {
-      if (!arr.hasOwnProperty(i)) {
-        continue;
-      }
-      // 将第一次的出参作为第二次的入参，有初始值时，真实索引从 0 开始；无初始值时，真实索引从 1 开始
-      result = fn.call(null, result, arr[i], startIndex + i, this);
+
+    let result = hasInitialValue ? args[1] : this[0]
+
+    for (let i = hasInitialValue ? 0 : 1;  i < this.length; i++) {
+      result = args[0](result, this[i], i, this)
     }
-    return result;
+
+    return result
   }
 
   const cb = (prev, curr, index, thisArg) => {
@@ -130,12 +127,13 @@
 {
   // map(callbackfn: (value: number, index: number, array: number[]) => any, thisArg?: any): any[]
   Array.prototype.myMap = function (fn, thisArg) {
-    const result = []
-    for (let i = 0; i < this.length; i++) {
+    const length = this.length
+    const result = new Array(length)
+    for (let i = 0; i < length; i++) {
       if (!this.hasOwnProperty(i)) {
         continue;
       }
-      result.push(fn.call(thisArg, this[i], i, this))
+      result[i] = fn.call(thisArg, this[i], i, this)
     }
     return result
   }

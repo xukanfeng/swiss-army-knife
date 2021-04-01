@@ -70,4 +70,14 @@
     return [...arguments].reduce((a, b) => a + b)
   })
   console.log("curry add", curryAdd_with_padding(_)(2, _)(4, 5)(1)(3))
+
+  function curry_v4(fn) {
+    return function curried(...args) {
+      if (args.length >= fn.length) {
+        return fn.call(this, ...args)
+      } else {
+        return curried.bind(this, ...args)
+      }
+    }
+  }
 }
