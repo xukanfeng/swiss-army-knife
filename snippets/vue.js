@@ -14,13 +14,13 @@
 
   //proxy
   const handler = {
-    set(target, key, value) {
-      target[key] = value
+    set(target, key, value, receiver) {
+      const success = Reflect.set(target, key, value, receiver)
 
       input.value = value
       span.innerHtml = value
 
-      return value
+      return success
     }
   }
   const proxy = new Proxy(data, handler)

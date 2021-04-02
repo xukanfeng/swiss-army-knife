@@ -8,14 +8,13 @@ Function.prototype.before = function (beforeFN) {
   const _self = this;
   return function () {
     beforeFN.apply(_self, arguments)
-    // before 和 after 中的 _self.apply(this, arguments) 都不可缺少，为什么？为什么不会重复调用 A()？
-    _self.apply(this, arguments)
+    _self.apply(this, arguments) // 这里的 _self 是 A
   }
 }
 Function.prototype.after = function (afterFN) {
   const _self = this;
   return function () {
-    _self.apply(this, arguments)
+    _self.apply(this, arguments) // 这里的 _self 是 .before 返回的函数，apply 才能执行
     afterFN.apply(_self, arguments)
   }
 }
