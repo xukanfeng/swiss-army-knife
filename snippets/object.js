@@ -106,6 +106,25 @@
 }
 
 {
+  Object.prototype.myAssgin = function(target, ...sources) {
+    if (target === null || target === undefined) {
+      throw new TypeError('Cannot convert undefined or null to object')
+    }
+    target = Object(target)
+    for (let source of sources) {
+      if (source === null || source === undefined) {
+        continue
+      }
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source))
+      for (const symbol of Object.getOwnPropertySymbols(source)) {
+        target[symbol] = source[symbol]
+      }
+    }
+    return target
+  }
+}
+
+{
   function myInstanceof(instance, obj) {
     // 基本数据类型返回 false
     if (typeof instance !== 'object' || instance === null) return false

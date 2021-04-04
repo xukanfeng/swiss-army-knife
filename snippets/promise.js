@@ -231,6 +231,7 @@
 
 {
   async function asyncPool_v1(tasks, poolLimit) {
+    // 或者也可以直接 return new Promise((resolve, reject) => {}) 来按需要处理结果（直接返回错误，或者忽略错误）
     const result = [];
     const executing = [];
     for (let task of tasks) {
@@ -285,7 +286,7 @@
   }
 
   const timeout = i => new Promise((resolve, reject) => setTimeout(() => {
-    console.log(i);
+    false && console.log(i);
     if (i === 50) reject(i)
     resolve(i)
   }, i));
@@ -296,7 +297,7 @@
       () => timeout(30),
       () => timeout(20)
     ], 2);
-    console.log('asyncPool', results)
+    false && console.log('asyncPool', results)
   })();
 }
 
@@ -308,8 +309,9 @@
     /*
     let p = Promise.resolve()
     array.forEach(item => {
-        p = p.then(() => item()).then(r => {res.push(r); return res;})
+        p = p.then(() => item()).then(r => res.push(r))
     })
+    p = p.then(() => res)
     */
 
     let p = array.reduce((prev, cur) => prev.then(() => cur()).then(r => {

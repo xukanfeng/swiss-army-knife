@@ -1,3 +1,5 @@
+const { func } = require("prop-types")
+
 {
   const vnode = {
     tag: '',
@@ -81,4 +83,38 @@
       _deps = dependencies;
     }
   }
+}
+
+function virtualize(element) {
+  const obj = {
+    type: element.tagName.toLowerCase(),
+    props: {}
+  }
+  for (let attr of element.attributes) {
+    const name = attr.name === 'class' ? 'className' : attr.name
+    obj.props[name] = attr.value
+  }
+  const children = []
+  for (let node of element.childNodes) {
+    if (node.nodeType === 3) {
+      children.push(node.textContent)
+    } else {
+      children.push(virtualize(node))
+    }
+  }
+  obj.props.children = children.length === 1 ? children[0] : children
+  return obj
+}
+function render(obj) {
+  if (typeof obj === 'string') return document.createTextNode(obj)
+  const { type, props: { children, ...attrs } } = obj
+  const element = document.createElement(type)
+  for (let [name, value] of Object.entries(attrs)) {
+    element.setAttribute(name === 'className' ? 'class' : name, value)
+  }
+  const childrenArr = Array.isArray(children) ? children : [children]
+  for (let child of childrenArr) {
+    element.append(render(child))
+  }
+  return element
 }

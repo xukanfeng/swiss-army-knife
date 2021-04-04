@@ -49,3 +49,21 @@ function autoBind(target) {
     }
   })
 }
+
+function wrap(arr) {
+  return new Proxy(arr, {
+    get(target, key) {
+      if (key === Symbol.iterator) { return Reflect.get(target, Symbol.iterator) }
+      return +key < 0 ? Reflect.get(target, target.length + +key) : Reflect.get(target, key)
+    },
+    set(target, key, value) {
+      if (+key < 0) {
+        if (target.length + +key < 0) throw new Error()
+        Reflect.set(target, target.length + +key, value)
+        return true
+      }
+      Reflect.set(target, key, value)
+      return true
+    }
+  })
+}
