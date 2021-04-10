@@ -15,7 +15,7 @@ function trim(str) {
  * 没有小数，或者以.加两位数字结尾
  */
 function isUSD(str) {
-    return new RegExp(/^\$([1-9]{1}\d{1,2}|\d)(,\d{3})*(\.\d{2})?$/).test(str)
+  return new RegExp(/^\$([1-9]{1}\d{1,2}|\d)(,\d{3})*(\.\d{2})?$/).test(str)
 }
 
 /**
@@ -25,3 +25,8 @@ function getUrlParams(url) {
   return url.match(/[^?&]([^=?&]*)=([^&#]*)/g)
 }
 false && console.log(getUrlParams('http://www.baidu.com?search=111&aa=1&b=22#ccc'))
+
+/**
+ * 获取函数名
+ */
+false && console.log(arguments.callee.toString().match(/function\s*([^(]*)\(/)[1])

@@ -31,6 +31,13 @@
     const fn = Symbol('fn')
     context[fn] = this
     const res = context[fn](...args)
+    /*
+    let args = []
+    for (let i = 1; i < arguments.length; i++) {
+      args.push('arguments[' + i + ']')
+    }
+    const res = eval('context.fn(' + args + ')')
+    */
     delete context[fn]
     return res
   }
@@ -106,7 +113,7 @@
 }
 
 {
-  Object.prototype.myAssgin = function(target, ...sources) {
+  Object.prototype.myAssgin = function (target, ...sources) {
     if (target === null || target === undefined) {
       throw new TypeError('Cannot convert undefined or null to object')
     }

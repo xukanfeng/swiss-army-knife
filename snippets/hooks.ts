@@ -28,8 +28,17 @@ function usePrevious<T>(state: T, compare?: compareFunction<T>): T | undefined {
   }
 
   return prevRef.current;
+
+  const ref = useRef()
+  useEffect(() => {
+    ref.current = state
+  })
+  return ref.current
 }
 
+/**
+ * unstated
+ */
 function createContainer(useHook) {
   const EMPTY = Symbol()
   const Context = React.createContext(EMPTY)
